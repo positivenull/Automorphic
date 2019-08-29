@@ -49,10 +49,14 @@
 #########
 
 */[Bb]uild/
+[Bb]uild/
 */[Oo]bj/
+[Oo]bj/
 *.o
 */[Dd]ebug*/
+[Dd]ebug*/
 */[Rr]elease*/
+[Rr]elease*/
 *.mode*
 *.app/
 *.pyc

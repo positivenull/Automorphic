@@ -1,17 +1,7 @@
 #pragma once
 
 #include "ofMain.h"
-
-class MyClass{
-
-public:
-	void set(int _i, float _f){
-		i = _i; f = _f;
-	};
-
-	int i;
-	float f;
-};
+#include "ofxAssimpModelLoader.h"
 
 class ofApp : public ofBaseApp{
 	public:
@@ -30,4 +20,17 @@ class ofApp : public ofBaseApp{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
+
+		ofMesh createSurface(int wid, int hei, int sep);
+		int surfWid = 100;
+		int surfHei = 100;
+		int imgWid = 400;
+		int imgHei = 400;
+
+		ofFbo		matFbo;
+		ofShader	colorShader;
+		ofMesh		boxMesh, surfMesh;
+		ofxAssimpModelLoader model;
+
+		ofEasyCam    camera1;
 };

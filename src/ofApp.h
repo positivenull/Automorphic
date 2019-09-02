@@ -2,6 +2,7 @@
 
 #include "ofMain.h"
 #include "ofxAssimpModelLoader.h"
+#include "ofxSpout.h"
 
 class ofApp : public ofBaseApp{
 	public:
@@ -21,16 +22,18 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
 
-		ofMesh createSurface(int wid, int hei, int sep);
-		int surfWid = 100;
-		int surfHei = 100;
-		int imgWid = 400;
-		int imgHei = 400;
+		void renderShaders();
+		ofFbo renderCamera(ofEasyCam cam);
+
+		int texWid = 400;	int texHei = 400;
+		int fboWid = 1280;	int fboHei = 720;
 
 		ofFbo		matFbo;
 		ofShader	colorShader;
-		ofMesh		boxMesh, surfMesh;
+		ofLight		dirLight;
 		ofxAssimpModelLoader model;
-
-		ofEasyCam    camera1;
+		
+		ofFbo		fbo1, fbo2;
+		ofEasyCam   cam1, cam2;
+		ofxSpout::Sender spOut1, spOut2;
 };

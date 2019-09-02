@@ -70,6 +70,7 @@ bin/*
 # be ignored
 ########################
 
+.vs
 */.vs
 
 # == XCode
@@ -88,6 +89,7 @@ xcuserdata
 
 # == VSCode
 *.code-workspace
+.vscode
 */.vscode
 
 # == Visual Studio

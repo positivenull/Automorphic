@@ -1,0 +1,5 @@
+ofxAddonLib
+ofxAssimpModelLoader
+ofxOpenCv
+ofxOsc
+ofxSpout

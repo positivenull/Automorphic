@@ -16,10 +16,15 @@ void ofApp::setup(){
 	fbo2.allocate(fboWid, fboHei);
 
     // init shader
-    colorShader.load("shaders/shader.vert", "shaders/basicColor.frag");
+	string vertex = "shaders/shader.vert";
+    texShaders[0].load(vertex, "shaders/basicColor.frag");
+    texShaders[1].load(vertex, "shaders/raymarch_alien.frag");
+    texShaders[2].load(vertex, "shaders/colorWall.frag");
+	texShaders[3].load(vertex, "shaders/clouds.frag");
+	texShaders[4].load(vertex, "shaders/basicColor.frag");
 
-    // load model
-	model.loadModel("shape.obj");
+    // load models
+	model.loadModel("models/amph_landscape.obj");
 
 	// initialize spout sender
 	spOut1.init("AutomorphicOfx_1");
@@ -38,7 +43,6 @@ void ofApp::setup(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
-
 }
 
 //--------------------------------------------------------------
@@ -81,18 +85,40 @@ void ofApp::draw(){
 void ofApp::renderShaders() {
 	matFbo.begin();
 	ofClear(0, 0);
-		colorShader.begin();
-		colorShader.setUniform1f("u_time", ofGetElapsedTimef());
-		colorShader.setUniform2f("u_resolution", texWid, texHei);
+		texShaders[baseShader].begin();
+		texShaders[baseShader].setUniform1f("u_time", ofGetElapsedTimef());
+		texShaders[baseShader].setUniform2f("u_resolution", texWid, texHei);
+		if(baseShader == 2){
+			texShaders[baseShader].setUniform1f("u_moveSpeed", 2.);
+			texShaders[baseShader].setUniform1f("u_colorSpeed", 1.);
+			texShaders[baseShader].setUniform1f("u_colorWave", 0.);
+			texShaders[baseShader].setUniform1f("u_intensity", 1.);
+		}
 		ofDrawRectangle(0, 0, texWid, texHei);
-		colorShader.end();
+		texShaders[baseShader].end();
 	matFbo.end();
 }
 
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-
+	switch(key){
+		case '0':
+			baseShader = 0;
+			break;
+		case '1':
+			baseShader = 1;
+			break;
+		case '2':
+			baseShader = 2;
+			break;
+		case '3':
+			baseShader = 3;
+			break;
+		case '4':
+			baseShader = 4;
+			break;
+	}
 }
 
 //--------------------------------------------------------------

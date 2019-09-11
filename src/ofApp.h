@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include "ofxAssimpModelLoader.h"
 #include "ofxSpout.h"
+#include "ofxOsc.h"
 
 class ofApp : public ofBaseApp{
 	public:
@@ -23,15 +24,18 @@ class ofApp : public ofBaseApp{
 		void gotMessage(ofMessage msg);
 
 		void renderShaders();
-		ofFbo renderCamera(ofEasyCam cam);
-
+		
 		int texWid = 400;	int texHei = 400;
 		int fboWid = 1280;	int fboHei = 720;
+		int baseShader = 0;
 
 		ofFbo		matFbo;
-		ofShader	colorShader;
+		ofShader	texShaders[5];
+		
 		ofLight		dirLight;
 		ofxAssimpModelLoader model;
+
+		//ofxOsc		cvOsc;
 		
 		ofFbo		fbo1, fbo2;
 		ofEasyCam   cam1, cam2;

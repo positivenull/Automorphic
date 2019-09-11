@@ -6,6 +6,8 @@ int main( ){
 	ofGLFWWindowSettings settings;
 	settings.setSize(1280, 720);
 
+	settings.title = "Automorphic";
+
 	settings.setGLVersion(4, 1);
 	ofCreateWindow(settings);
 

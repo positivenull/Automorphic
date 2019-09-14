@@ -11,7 +11,8 @@ void ofApp::setup(){
     ofEnableDepthTest();
 
     // init Fbo
-	matFbo.allocate(texWid, texHei);
+	baseFbo.allocate(texWid, texHei);
+	objsFbo.allocate(texWid, texHei);
 	fbo1.allocate(fboWid, fboHei);
 	fbo2.allocate(fboWid, fboHei);
 
@@ -39,6 +40,14 @@ void ofApp::setup(){
 	// init light
 	dirLight.setDirectional();
 	dirLight.setOrientation(ofVec3f(-1, -1, -1));
+
+	// init FFT
+	bufferSize = 2048;
+	fft = ofxFft::create(bufferSize, OF_FFT_WINDOW_HAMMING);
+	ofSoundStreamSetup(0, 1, this, 44100, bufferSize, 4);
+
+	// init OSC
+	cvOsc.setup(PORT_CV);
 }
 
 //--------------------------------------------------------------
@@ -53,9 +62,9 @@ void ofApp::draw(){
 	ofClear(0, 0);
     cam1.begin();
 		dirLight.enable();
-        matFbo.getTexture().bind();
+        baseFbo.getTexture().bind();
         model.drawFaces();
-        matFbo.getTexture().unbind();
+        baseFbo.getTexture().unbind();
 		dirLight.disable();
     cam1.end();
 	fbo1.end();
@@ -64,9 +73,9 @@ void ofApp::draw(){
 	ofClear(0, 0);
 	cam2.begin();
 		dirLight.enable();
-		matFbo.getTexture().bind();
+		baseFbo.getTexture().bind();
 		model.drawFaces();
-		matFbo.getTexture().unbind();
+		baseFbo.getTexture().unbind();
 		dirLight.disable();
 	cam2.end();
 	fbo2.end();
@@ -83,11 +92,14 @@ void ofApp::draw(){
 
 //--------------------------------------------------------------
 void ofApp::renderShaders() {
-	matFbo.begin();
+	baseFbo.begin();
 	ofClear(0, 0);
 		texShaders[baseShader].begin();
 		texShaders[baseShader].setUniform1f("u_time", ofGetElapsedTimef());
 		texShaders[baseShader].setUniform2f("u_resolution", texWid, texHei);
+		texShaders[baseShader].setUniform1f("u_gridSize", gridSize);
+		texShaders[baseShader].setUniform2f("u_moveSpeed", speed.x, speed.y);
+		texShaders[baseShader].setUniform1f("u_colorShift", colorShift);
 		if(baseShader == 2){
 			texShaders[baseShader].setUniform1f("u_moveSpeed", 2.);
 			texShaders[baseShader].setUniform1f("u_colorSpeed", 1.);
@@ -96,7 +108,34 @@ void ofApp::renderShaders() {
 		}
 		ofDrawRectangle(0, 0, texWid, texHei);
 		texShaders[baseShader].end();
-	matFbo.end();
+	baseFbo.end();
+
+	objsFbo.begin();
+	ofClear(0, 0);
+		texShaders[baseShader].begin();
+		texShaders[baseShader].setUniform1f("u_time", ofGetElapsedTimef());
+		texShaders[baseShader].setUniform2f("u_resolution", texWid, texHei);
+		if (baseShader == 2) {
+			texShaders[baseShader].setUniform1f("u_moveSpeed", 2.);
+			texShaders[baseShader].setUniform1f("u_colorSpeed", 1.);
+			texShaders[baseShader].setUniform1f("u_colorWave", 0.);
+			texShaders[baseShader].setUniform1f("u_intensity", 1.);
+		}
+		ofDrawRectangle(0, 0, texWid, texHei);
+		texShaders[baseShader].end();
+	objsFbo.end();
+}
+
+
+void ofApp::getOsc() {
+	while (cvOsc.hasWaitingMessages()) {
+		ofxOscMessage m;
+		cvOsc.getNextMessage(m);
+
+		if (m.getAddress() == "") {
+			float a = m.getArgAsFloat(0);
+		}
+	}
 }
 
 

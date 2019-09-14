@@ -4,6 +4,9 @@
 #include "ofxAssimpModelLoader.h"
 #include "ofxSpout.h"
 #include "ofxOsc.h"
+#include "ofxFft.h"
+
+#define PORT_CV 2200
 
 class ofApp : public ofBaseApp{
 	public:
@@ -23,20 +26,36 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
 
+		void getOsc();
 		void renderShaders();
 		
+		// base parameters
 		int texWid = 400;	int texHei = 400;
 		int fboWid = 1280;	int fboHei = 720;
-		int baseShader = 0;
 
-		ofFbo		matFbo;
+		// shaders parameters -- input
+		vector< glm::vec2 > audience;
+		vector< glm::vec2 > frequencies;
+		glm::vec3 harmonies;
+		float amplitude;
+		// shaders parameters -- output
+		int baseShader = 0;	int objsShader = 0;
+		float gridSize, colorShift;
+		glm::vec2 speed;
+
+		// rendering objects
+		ofFbo		baseFbo, objsFbo;
 		ofShader	texShaders[5];
 		
 		ofLight		dirLight;
 		ofxAssimpModelLoader model;
 
-		//ofxOsc		cvOsc;
-		
+		// input & analysis
+		ofxFft* fft;
+		int bufferSize;
+		ofxOscReceiver	cvOsc;
+
+		// cameras and Spout output
 		ofFbo		fbo1, fbo2;
 		ofEasyCam   cam1, cam2;
 		ofxSpout::Sender spOut1, spOut2;

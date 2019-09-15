@@ -1,7 +1,9 @@
 #version 410
 
 uniform float u_time;
-uniform vec2 u_resolution;
+uniform vec2  u_resolution;
+
+uniform float u_gridSize;
 
 uniform float u_moveSpeed;
 uniform float u_colorSpeed;
@@ -63,6 +65,7 @@ void main()
   // Screen coordinates.
 	vec2 uv = (gl_FragCoord.xy - u_resolution.xy * 0.5) / u_resolution.y;
 	uv.y += 0.01 * u_moveSpeed * u_time;
+	uv *= u_gridSize;
 	vec2 st = gl_FragCoord.xy / u_resolution.xy;
   
   // Prerotation to align the grid to the horizontal, but I'm leaving it on a slant for... stylistic purposes. :)
@@ -105,12 +108,12 @@ void main()
   
   
   // Approximate gamma correction.
-	col = sqrt(max(col, 0.));
+  col = sqrt(max(col, 0.));
   
   // hue waves
   vec3 hsvCol = rgb2hsv(col.rgb);
-	hsvCol.x += 0.5 * u_colorSpeed * u_time;
-	hsvCol.x += u_colorWave * (sin(st.x-0.5) + cos(st.y-1.));
+  hsvCol.x += 0.5 * u_colorSpeed * u_time;
+  hsvCol.x += u_colorWave * (sin(st.x-0.5) + cos(st.y-1.));
 
-	fragColor = vec4(hsv2rgb(hsvCol), 1.);
+  fragColor = vec4(hsv2rgb(hsvCol), 1.);
 }

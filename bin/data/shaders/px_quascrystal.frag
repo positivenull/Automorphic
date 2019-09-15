@@ -1,4 +1,4 @@
-#version 330
+#version 410
 
 // from pixelshaders.com
 
@@ -7,7 +7,8 @@ precision mediump float;
 #endif
 
 uniform float u_time;
-uniform vec2 u_resolution;
+uniform vec2  u_resolution;
+uniform float u_gridSize;
 
 out vec4 fragColor;
 
@@ -24,11 +25,9 @@ float wave_s(in vec2 _uv, in float _angle) {
 float wrap(in float x){ return abs(mod(x, 2.)-1.); }
 
 void main() {
-    vec2 st = gl_FragCoord.xy / u_resolution;
-    st -= 0.5;
-    vec2 center = 0.5 * vec2(0., 0.75);
-    // vec2 center = 1.0 * vec2(cos(u_time/10.), sin(u_time/10.));
-    st += center; 
+    vec2 st = gl_FragCoord.xy / u_resolution - vec2(0.5);
+    st.y += 0.03;
+	st = st * (1 + vec2(u_gridSize - 4.)/4);
 
     float bri_wave = 0.;
     for(float i=4.; i<=8.; i++){

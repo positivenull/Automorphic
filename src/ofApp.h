@@ -28,9 +28,10 @@ class ofApp : public ofBaseApp{
 
 		void getOsc();
 		void renderShaders();
+		void shadersBlend();
 		
 		// base parameters
-		int texWid = 400;	int texHei = 400;
+		int texWid = 1024;	int texHei = 1024;
 		int fboWid = 1280;	int fboHei = 720;
 
 		// shaders parameters -- input
@@ -40,12 +41,12 @@ class ofApp : public ofBaseApp{
 		float amplitude;
 		// shaders parameters -- output
 		int baseShader = 0;	int objsShader = 0;
-		float gridSize, colorShift;
+		float gridSize, colorShift, blend;
 		glm::vec2 speed;
 
 		// rendering objects
-		ofFbo		baseFbo, objsFbo;
-		ofShader	texShaders[5];
+		ofFbo		baseFbo, maskFbo, objsFbo, blendFbo, base1, base2;
+		ofShader	texShaders[7], blendShader;
 		
 		ofLight		dirLight;
 		ofxAssimpModelLoader model;

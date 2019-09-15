@@ -9,6 +9,7 @@ int main( ){
 	settings.title = "Automorphic";
 
 	settings.setGLVersion(4, 1);
+	//settings.setGLVersion(3, 3);
 	ofCreateWindow(settings);
 
 	ofRunApp( new ofApp() );

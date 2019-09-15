@@ -1,7 +1,8 @@
 #version 410
 
 uniform float u_time;
-uniform vec2 u_resolution;
+uniform vec2  u_resolution;
+uniform float u_gridSize;
 
 uniform float u_moveSpeed;
 uniform float u_colorSpeed;
@@ -10,7 +11,7 @@ uniform float u_intensity;
 
 out vec4 fragColor;
 
-#define grid_size 10.0
+//#define grid_size 10.0
 #define glow_size 2.0
 #define glow_br   0.2
 #define time_step 10.0
@@ -46,6 +47,7 @@ float step_to(float value, float steps)
 
 vec4 dot_grid(vec2 pos, bool with_grid)
 {
+	float grid_size = u_gridSize * 3.;
 	float value = floor(mod(pos.x,grid_size)) * floor(mod(pos.y,grid_size));		
 	value		= clamp(value, 0.0, 1.0);
 	

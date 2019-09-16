@@ -12,8 +12,6 @@ void ofApp::setup(){
 
     // init Fbo
 	baseFbo.allocate (texWid, texHei, GL_RGBA);
-	base1.allocate   (texWid, texHei, GL_RGBA);
-	base2.allocate   (texWid, texHei, GL_RGBA);
 	objsFbo.allocate (texWid, texHei, GL_RGBA);
 	maskFbo.allocate (texWid, texHei, GL_RGBA);
 	blendFbo.allocate(texWid, texHei, GL_RGBA);
@@ -43,8 +41,9 @@ void ofApp::setup(){
 	dirLight.setOrientation(ofVec3f(-1, -1, -1));
 
 	// load models
-	model.loadModel("models/amph_landscape.obj");
-
+	mLand.loadModel("models/amph_landscape.obj");
+	mObjs.loadModel("models/amph_objects.obj");
+	mObjs.setScale(0.9, 0.9, 0.9);
 
 	// init parameters
 	gridSize = 4;
@@ -71,18 +70,21 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
+	ofDisableDepthTest();
 	renderShaders();
 	//shadersBlend();
 
+	ofEnableDepthTest();
 	fbo1.begin();
 	ofClear(0, 0);
     cam1.begin();
 		dirLight.enable();
 		blendFbo.getTexture().bind();
-        model.drawFaces();
+		mLand.drawFaces();
 		blendFbo.getTexture().unbind();
+		mObjs.drawFaces();
 		dirLight.disable();
-    cam1.end();
+	cam1.end();
 	fbo1.end();
 
 	fbo2.begin();
@@ -90,8 +92,9 @@ void ofApp::draw(){
 	cam2.begin();
 		dirLight.enable();
 		baseFbo.getTexture().bind();
-		model.drawFaces();
+		mLand.drawFaces();
 		baseFbo.getTexture().unbind();
+		mObjs.drawFaces();
 		dirLight.disable();
 	cam2.end();
 	fbo2.end();
@@ -99,6 +102,9 @@ void ofApp::draw(){
 
     // matFbo.draw(0, 0);
 	fbo1.draw(0, 0);
+
+	if (bTest) { blendFbo.draw(0, 0); }
+	else {}
 
 	// send picture via Spout
 	spOut1.send(fbo1.getTexture());
@@ -108,6 +114,14 @@ void ofApp::draw(){
 
 //--------------------------------------------------------------
 void ofApp::renderShaders() {
+	// temporary FBOs
+	ofFbo	base1, base2, blend1, blend2;
+	base1.allocate(texWid, texHei, GL_RGBA);
+	base2.allocate(texWid, texHei, GL_RGBA);
+	blend1.allocate(texWid, texHei, GL_RGBA);
+	blend2.allocate(texWid, texHei, GL_RGBA);
+
+	// -- base shaders
 	baseFbo.begin();
 	ofClear(0, 0);
 		texShaders[baseShader].begin();
@@ -116,7 +130,7 @@ void ofApp::renderShaders() {
 		texShaders[baseShader].setUniform1f("u_gridSize", gridSize);
 		texShaders[baseShader].setUniform2f("u_moveSpeed", speed.x, speed.y);
 		texShaders[baseShader].setUniform1f("u_colorShift", colorShift);
-		if(baseShader == 2 || baseShader == 4){
+		if (baseShader == 2 || baseShader == 4) {
 			texShaders[baseShader].setUniform1f("u_moveSpeed", 2.);
 			texShaders[baseShader].setUniform1f("u_colorSpeed", 1.);
 			texShaders[baseShader].setUniform1f("u_colorWave", 0.);
@@ -158,6 +172,7 @@ void ofApp::renderShaders() {
 		texShaders[4].end();
 	base2.end();
 
+	// -- mask shader
 	maskFbo.begin();
 	ofClear(0, 0);
 		texShaders[5].begin();
@@ -168,28 +183,29 @@ void ofApp::renderShaders() {
 		texShaders[5].end();
 	maskFbo.end();
 
+	// -- objects shader
 	objsFbo.begin();
 	ofClear(0, 0);
-		texShaders[baseShader].begin();
-		texShaders[baseShader].setUniform1f("u_time", ofGetElapsedTimef());
-		texShaders[baseShader].setUniform2f("u_resolution", texWid, texHei);
-		if (baseShader == 2 || baseShader == 4) {
-			texShaders[baseShader].setUniform1f("u_moveSpeed", 2.);
-			texShaders[baseShader].setUniform1f("u_colorSpeed", 1.);
-			texShaders[baseShader].setUniform1f("u_colorWave", 0.);
-			texShaders[baseShader].setUniform1f("u_intensity", 1.);
-		}
-		ofDrawRectangle(0, 0, texWid, texHei);
-		texShaders[baseShader].end();
+	texShaders[baseShader].begin();
+	texShaders[baseShader].setUniform1f("u_time", ofGetElapsedTimef());
+	texShaders[baseShader].setUniform2f("u_resolution", texWid, texHei);
+	if (baseShader == 2 || baseShader == 4) {
+		texShaders[baseShader].setUniform1f("u_moveSpeed", 2.);
+		texShaders[baseShader].setUniform1f("u_colorSpeed", 1.);
+		texShaders[baseShader].setUniform1f("u_colorWave", 0.);
+		texShaders[baseShader].setUniform1f("u_intensity", 1.);
+	}
+	ofDrawRectangle(0, 0, texWid, texHei);
+	texShaders[baseShader].end();
 	objsFbo.end();
 
-	blendFbo.begin();
+	// -- blend shaders
+	float mixer = abs(blend);
+	// ----- texture part 1
+	blend1.begin();
 	ofClear(0, 0);
-		float mixer = abs(blend);
-
-		// texture part 1
 		blendShader.begin();
-		blendShader.setUniformTexture("inTex",   base1.getTexture(), 0);
+		blendShader.setUniformTexture("inTex", base1.getTexture(), 0);
 		blendShader.setUniformTexture("maskTex", maskFbo.getTextureReference(0), 1);
 		blendShader.setUniform1f("u_time", ofGetElapsedTimef());
 		blendShader.setUniform2f("u_resolution", texWid, texHei);
@@ -197,8 +213,10 @@ void ofApp::renderShaders() {
 		blendShader.setUniform1i("u_invert", 0);
 		ofDrawRectangle(0, 0, texWid, texHei);
 		blendShader.end();
-
-		// texture part 2
+	blend1.end();
+	// ----- texture part 2
+	blend2.begin();
+	ofClear(0, 0);
 		blendShader.begin();
 		blendShader.setUniformTexture("inTex", base2.getTexture(), 0);
 		blendShader.setUniformTexture("maskTex", maskFbo.getTextureReference(0), 1);
@@ -208,6 +226,12 @@ void ofApp::renderShaders() {
 		blendShader.setUniform1i("u_invert", 1);
 		ofDrawRectangle(0, 0, texWid, texHei);
 		blendShader.end();
+	blend2.end();
+	// ----- final mix
+	blendFbo.begin();
+	ofClear(0, 0);
+		blend1.draw(0, 0);
+		blend2.draw(0, 0);
 	blendFbo.end();
 }
 
@@ -240,7 +264,8 @@ void ofApp::getOsc() {
 			gridSize = 1.5 + amount / 20 * 5;
 		}
 		else if (m.getAddress() == "/control/blend") {
-			blend = m.getArgAsFloat(0)*2 - 1;
+			//blend = m.getArgAsFloat(0)*2 - 1;
+			blend = m.getArgAsFloat(0);
 			// keep blend in range [-1,1]
 			if (blend < -1) { blend = -1; }
 			else if (blend > 1) { blend = 1; }
@@ -275,6 +300,12 @@ void ofApp::keyPressed(int key){
 			break;
 		case '6':
 			baseShader = 6;
+			break;
+		case 'z':
+			bSwitch = !bSwitch;
+			break;
+		case 'x':
+			bTest = !bTest;
 			break;
 	}
 }

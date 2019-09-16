@@ -33,6 +33,8 @@ class ofApp : public ofBaseApp{
 		// base parameters
 		int texWid = 1024;	int texHei = 1024;
 		int fboWid = 1280;	int fboHei = 720;
+		bool bSwitch = false;
+		bool bTest = false;
 
 		// shaders parameters -- input
 		vector< glm::vec2 > audience;
@@ -45,11 +47,11 @@ class ofApp : public ofBaseApp{
 		glm::vec2 speed;
 
 		// rendering objects
-		ofFbo		baseFbo, maskFbo, objsFbo, blendFbo, base1, base2;
+		ofFbo		baseFbo, maskFbo, objsFbo, blendFbo;
 		ofShader	texShaders[7], blendShader;
 		
 		ofLight		dirLight;
-		ofxAssimpModelLoader model;
+		ofxAssimpModelLoader mLand, mObjs;
 
 		// input & analysis
 		ofxFft* fft;

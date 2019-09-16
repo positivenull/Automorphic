@@ -16,10 +16,10 @@ void main(){
     vec4 texColor  = texture(inTex, st);
 	vec4 maskColor = texture(maskTex, st);
 
-	float alpha = u_invert ? max(1-maskColor.x, u_blend) : max(maskColor.x, u_blend);
-	
-	vec3 col = mix(maskColor.rgb, texColor.rgb, u_blend);
+	float blend = u_invert ? 1-u_blend : u_blend;
+	float aMask = u_invert ? 1-maskColor.x : maskColor.x;
+	float alpha = max(aMask, blend);
 
-    //fragColor = vec4(texColor.rgb, alpha);
-	fragColor = vec4(col, 1.);
+
+    fragColor = vec4(texColor.rgb, alpha);
 }

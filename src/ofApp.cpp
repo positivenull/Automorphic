@@ -51,9 +51,10 @@ void ofApp::setup(){
 	blend = 0;
 
 	// init FFT
+	initSound();
 	bufferSize = 2048;
 	fft = ofxFft::create(bufferSize, OF_FFT_WINDOW_HAMMING);
-	ofSoundStreamSetup(0, 1, this, 44100, bufferSize, 4);
+	//ofSoundStreamSetup(0, 1, this, 44100, bufferSize, 4);
 
 	// initialize spout sender
 	spOut1.init("AutomorphicOfx_1");

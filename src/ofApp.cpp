@@ -117,6 +117,11 @@ void ofApp::draw(){
 	// send picture via Spout
 	spOut1.send(fbo1.getTexture());
 	spOut2.send(fbo2.getTexture());
+
+	// show settings
+	//spOut1.send(blendFbo.getTexture());
+	//spOut2.send(baseFbo.getTexture());
+
 }
 
 

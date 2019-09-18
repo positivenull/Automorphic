@@ -1,4 +1,4 @@
-#version 410
+#version 400
 
 uniform float u_time;
 uniform vec2  u_resolution;

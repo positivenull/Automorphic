@@ -1,4 +1,4 @@
-#version 410
+#version ¸
 
 uniform sampler2D inTex;
 uniform sampler2D maskTex;

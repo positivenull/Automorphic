@@ -1,4 +1,4 @@
-#version 410
+#version 400
 
 //#extension GL_OES_standard_derivatives : enable 
 

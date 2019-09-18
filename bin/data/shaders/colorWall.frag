@@ -12,7 +12,7 @@ uniform float u_intensity;
 out vec4 fragColor;
 
 //#define grid_size 10.0
-#define glow_size 2.0
+#define glow_size 5.0
 #define glow_br   0.2
 #define time_step 10.0
 

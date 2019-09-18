@@ -15,6 +15,7 @@ class ofApp : public ofBaseApp{
 		void draw();
 		
 		void keyPressed(int key);
+
 		void keyReleased(int key);
 		void mouseMoved(int x, int y);
 		void mouseDragged(int x, int y, int button);
@@ -26,15 +27,25 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
 
+		void initSound();
+		void updateVol();
+		void audioIn(ofSoundBuffer & input);
+
 		void getOsc();
 		void renderShaders();
-		void shadersBlend();
 		
 		// base parameters
 		int texWid = 1024;	int texHei = 1024;
 		int fboWid = 1280;	int fboHei = 720;
 		bool bSwitch = false;
 		bool bTest = false;
+
+		// sound parameters
+		vector <float> left, right, volHistory;
+		int 	bufferCounter, drawCounter;
+		float	smoothedVol, scaledVol;
+		float	usedVol; //tuba: adding a float to store the mapped out volume data
+		ofSoundStream soundStream;
 
 		// shaders parameters -- input
 		vector< glm::vec2 > audience;
@@ -43,11 +54,10 @@ class ofApp : public ofBaseApp{
 		float amplitude;
 		// shaders parameters -- output
 		int baseShader = 0;	int objsShader = 0;
-		float gridSize, colorShift, blend;
-		glm::vec2 speed;
+		float gridSize, colorShift, blend, moveSpeed;
 
 		// rendering objects
-		ofFbo		baseFbo, maskFbo, objsFbo, blendFbo;
+		ofFbo		baseFbo, maskFbo, blendFbo;
 		ofShader	texShaders[7], blendShader;
 		
 		ofLight		dirLight;

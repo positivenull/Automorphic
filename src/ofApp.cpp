@@ -174,13 +174,15 @@ void ofApp::audioIn(ofSoundBuffer & input) {
 	int numCounted = 0;
 
 	//lets go through each sample and calculate the root mean square which is a rough way to calculate volume	
-	for (size_t i = 0; i < input.getNumFrames(); i++) {
-		left[i] = input[i * 2] * 0.5;
-		right[i] = input[i * 2 + 1] * 0.5;
+	if(input.getNumFrames() > 0){
+		for (size_t i = 0; i < input.getNumFrames(); i++) {
+			left[i] = input[i * 2] * 0.5;
+			right[i] = input[i * 2 + 1] * 0.5;
 
-		curVol += left[i] * left[i];
-		curVol += right[i] * right[i];
-		numCounted += 2;
+			curVol += left[i] * left[i];
+			curVol += right[i] * right[i];
+			numCounted += 2;
+		}
 	}
 
 	//this is how we get the mean of rms :) 

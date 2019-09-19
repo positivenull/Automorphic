@@ -31,7 +31,7 @@ float smoothNoise(vec2 pos){
 float fractalNoise(vec2 pos){
     float result = 0.;
     float divs = 0.;
-    for(int i=0.; i<=4.; i++){
+    for(int i=0; i<=4; i++){
         result += smoothNoise(pos * pow(-2., i)) / pow(2.,i);
         divs  += 1./ pow(2, i);
     }
@@ -40,7 +40,7 @@ float fractalNoise(vec2 pos){
 float movingNoise(vec2 pos){
     float result = 0.;
     float divs = 0.;
-    for(int i=0.; i<=4.; i++){
+    for(int i=0; i<=4; i++){
         result += smoothNoise(pos*pow(-2., i) - u_time*pow(-1., i)) / pow(2.,i);
         divs  += 1./ pow(2, i);
     }
